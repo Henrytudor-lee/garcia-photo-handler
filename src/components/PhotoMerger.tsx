@@ -155,39 +155,39 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 space-y-4">
-        <h3 className="font-semibold text-lg">拼接设置</h3>
+      <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 space-y-4 shadow-lg shadow-teal-500/5 border border-teal-100 dark:border-teal-900/30 animate-fade-in-up">
+        <h3 className="font-semibold text-lg text-teal-800 dark:text-teal-200">拼接设置</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2">拼接方式</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">拼接方式</label>
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setDirection('vertical')}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                className={`btn-press px-4 py-2 rounded-lg text-sm transition-all duration-200 ${
                   direction === 'vertical'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md shadow-teal-500/20'
+                    : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 上下拼接
               </button>
               <button
                 onClick={() => setDirection('horizontal')}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                className={`btn-press px-4 py-2 rounded-lg text-sm transition-all duration-200 ${
                   direction === 'horizontal'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md shadow-teal-500/20'
+                    : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 左右拼接
               </button>
               <button
                 onClick={() => setDirection('grid')}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                className={`btn-press px-4 py-2 rounded-lg text-sm transition-all duration-200 ${
                   direction === 'grid'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md shadow-teal-500/20'
+                    : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 九宫格
@@ -197,16 +197,16 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
 
           {direction === 'grid' && (
             <div>
-              <label className="block text-sm font-medium mb-2">网格列数</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">网格列数</label>
               <div className="flex gap-2 flex-wrap">
                 {[2, 3, 4].map((cols) => (
                   <button
                     key={cols}
                     onClick={() => setGridCols(cols as GridCols)}
-                    className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                    className={`btn-press px-4 py-2 rounded-lg text-sm transition-all duration-200 ${
                       gridCols === cols
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                        ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md shadow-teal-500/20'
+                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
                     }`}
                   >
                     {cols} 列
@@ -217,7 +217,7 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
               间距: {gap}px
             </label>
             <input
@@ -226,17 +226,17 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
               max="50"
               value={gap}
               onChange={(e) => setGap(Number(e.target.value))}
-              className="w-full"
+              className="w-full accent-teal-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">背景颜色</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">背景颜色</label>
             <input
               type="color"
               value={backgroundColor}
               onChange={(e) => setBackgroundColor(e.target.value)}
-              className="w-full h-10 rounded-lg cursor-pointer"
+              className="w-full h-10 rounded-lg cursor-pointer border-2 border-gray-200 dark:border-gray-600 transition-transform duration-200 hover:scale-[1.02]"
             />
           </div>
         </div>
@@ -244,7 +244,9 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
         <button
           onClick={mergeImages}
           disabled={isProcessing}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+          className={`btn-press w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:shadow-lg hover:shadow-teal-500/25 hover:from-teal-600 hover:to-teal-700 transition-all duration-200 disabled:opacity-50 ${
+            isProcessing ? 'animate-pulse' : ''
+          }`}
         >
           {isProcessing ? (
             <>
@@ -260,11 +262,11 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
         </button>
       </div>
 
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-        <h3 className="font-semibold text-lg mb-4">预览</h3>
+      <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-lg shadow-teal-500/5 border border-teal-100 dark:border-teal-900/30 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+        <h3 className="font-semibold text-lg mb-4 text-teal-800 dark:text-teal-200">预览</h3>
         <canvas
           ref={canvasRef}
-          className="max-w-full h-auto mx-auto rounded-lg"
+          className="max-w-full h-auto mx-auto rounded-lg transition-opacity duration-300"
           style={{ display: 'block' }}
         />
       </div>

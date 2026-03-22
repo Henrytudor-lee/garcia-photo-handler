@@ -275,13 +275,19 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-2xl overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
-          <h3 className="text-lg font-semibold">裁剪图片</h3>
+    <div
+      className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 animate-fade-in"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl shadow-teal-500/10 animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-4 border-b dark:border-gray-700 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/30 dark:to-cyan-950/20">
+          <h3 className="text-lg font-semibold text-teal-800 dark:text-teal-200">裁剪图片</h3>
           <button
             onClick={onCancel}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+            className="p-2 hover:bg-teal-100 dark:hover:bg-teal-900/30 rounded-full transition-colors text-teal-700 dark:text-teal-300 btn-press"
           >
             <X size={20} />
           </button>
@@ -325,12 +331,13 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
               onTouchStart={handleResizeStart}
             >
               <div
+                className="hover:scale-110 transition-transform duration-200"
                 style={{
                   width: 28,
                   height: 28,
                   borderRadius: '50%',
-                  background: '#3b82f6',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                  background: 'linear-gradient(135deg, #14b8a6, #06b6d4)',
+                  boxShadow: '0 2px 8px rgba(20, 184, 166, 0.4)',
                   border: '2px solid white',
                   display: 'flex',
                   alignItems: 'center',
@@ -346,14 +353,14 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
         </div>
 
         <div className="p-4 space-y-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+          <p className="text-sm text-teal-600 dark:text-teal-400 text-center">
             {aspectRatio === 0
-              ? '拖拽右下角蓝色手柄调整裁剪框大小'
+              ? '拖拽右下角青色手柄调整裁剪框大小'
               : '拖拽裁剪框选择要保留的区域'}
           </p>
 
           <div className="flex items-center gap-4">
-            <ZoomOut size={18} />
+            <ZoomOut size={18} className="text-teal-600 dark:text-teal-400" />
             <input
               type="range"
               min={1}
@@ -361,13 +368,13 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
               step={0.1}
               value={zoom}
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="flex-1"
+              className="flex-1 accent-teal-500"
             />
-            <ZoomIn size={18} />
+            <ZoomIn size={18} className="text-teal-600 dark:text-teal-400" />
           </div>
 
           <div className="flex items-center gap-4">
-            <RotateCcw size={18} />
+            <RotateCcw size={18} className="text-teal-600 dark:text-teal-400" />
             <input
               type="range"
               min={0}
@@ -375,68 +382,68 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
               step={1}
               value={rotation}
               onChange={(e) => setRotation(Number(e.target.value))}
-              className="flex-1"
+              className="flex-1 accent-teal-500"
             />
-            <span className="text-sm w-12">{rotation}°</span>
+            <span className="text-sm w-12 text-teal-700 dark:text-teal-300">{rotation}°</span>
           </div>
 
-          <div className="flex gap-2 flex-wrap justify-center">
+          <div className="flex gap-2 flex-wrap justify-center animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             <button
               onClick={() => handleAspectRatioChange(1)}
-              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+              className={`btn-press px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                 aspectRatio === 1
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md shadow-teal-500/20'
+                  : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
               }`}
             >
               1:1
             </button>
             <button
               onClick={() => handleAspectRatioChange(4 / 3)}
-              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+              className={`btn-press px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                 aspectRatio === 4 / 3
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md shadow-teal-500/20'
+                  : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
               }`}
             >
               4:3
             </button>
             <button
               onClick={() => handleAspectRatioChange(16 / 9)}
-              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+              className={`btn-press px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                 aspectRatio === 16 / 9
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md shadow-teal-500/20'
+                  : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
               }`}
             >
               16:9
             </button>
             <button
               onClick={() => handleAspectRatioChange(3 / 4)}
-              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+              className={`btn-press px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                 aspectRatio === 3 / 4
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md shadow-teal-500/20'
+                  : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
               }`}
             >
               3:4
             </button>
             <button
               onClick={() => handleAspectRatioChange(9 / 16)}
-              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+              className={`btn-press px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                 aspectRatio === 9 / 16
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md shadow-teal-500/20'
+                  : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
               }`}
             >
               9:16
             </button>
             <button
               onClick={() => handleAspectRatioChange(0)}
-              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+              className={`btn-press px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                 aspectRatio === 0
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md shadow-teal-500/20'
+                  : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
               }`}
             >
               自由比例
@@ -446,13 +453,13 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
           <div className="flex gap-3">
             <button
               onClick={onCancel}
-              className="flex-1 px-4 py-3 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 font-medium"
+              className="btn-press flex-1 px-4 py-3 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-colors"
             >
               取消
             </button>
             <button
               onClick={getCroppedImg}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium"
+              className="btn-press flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:shadow-lg hover:shadow-teal-500/25 hover:from-teal-600 hover:to-teal-700 font-medium transition-all duration-200"
             >
               <Check size={18} />
               确认裁剪
