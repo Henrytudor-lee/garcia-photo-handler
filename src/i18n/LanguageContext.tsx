@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { translations, Language } from './translations';
 
 interface LanguageContextType {
@@ -19,16 +19,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('language', lang);
   }, []);
 
-  // Initialize from localStorage
-  useState(() => {
+  // Initialize from localStorage on client side only
+  useEffect(() => {
     const saved = localStorage.getItem('language') as Language | null;
     if (saved && (saved === 'zh' || saved === 'en')) {
       setLanguageState(saved);
     }
-  });
+  }, []);
 
   const t = useCallback((key: keyof typeof translations.zh, params?: Record<string, string | number>): string => {
-    let text = translations[language][key] || translations.zh[key] || key;
+    let text: string = translations[language][key] || translations.zh[key] || key;
     if (params) {
       Object.entries(params).forEach(([k, v]) => {
         text = text.replace(`{${k}}`, String(v));
