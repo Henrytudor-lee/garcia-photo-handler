@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Download, RefreshCw } from 'lucide-react';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 type MergeDirection = 'horizontal' | 'vertical' | 'grid';
 type GridCols = 2 | 3 | 4;
@@ -12,6 +13,7 @@ interface PhotoMergerProps {
 }
 
 export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
+  const { t } = useLanguage();
   const [direction, setDirection] = useState<MergeDirection>('vertical');
   const [gridCols, setGridCols] = useState<GridCols>(3);
   const [gap, setGap] = useState(10);
@@ -49,9 +51,8 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
       const padding = gap;
 
       if (direction === 'horizontal') {
-        // Horizontal merge
         const maxHeight = Math.max(...loadedImages.map(img => img.height));
-        const scale = 800 / maxHeight; // Scale to reasonable width
+        const scale = 800 / maxHeight;
 
         totalWidth = loadedImages.reduce((sum, img) => {
           return sum + (img.width * scale);
@@ -73,7 +74,6 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
           currentX += scaledWidth;
         });
       } else if (direction === 'vertical') {
-        // Vertical merge
         const maxWidth = Math.max(...loadedImages.map(img => img.width));
         const scale = 800 / maxWidth;
 
@@ -96,13 +96,11 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
           currentY += scaledHeight;
         });
       } else {
-        // Grid merge
         const cols = Math.min(gridCols, images.length);
         const rows = Math.ceil(images.length / cols);
         const cellWidth = 400;
         const cellHeight = 400;
 
-        // First pass: calculate total size and scale images
         let maxCellWidth = 0;
         let maxCellHeight = 0;
 
@@ -156,11 +154,11 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
   return (
     <div className="space-y-6">
       <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 space-y-4 shadow-lg shadow-teal-500/5 border border-teal-100 dark:border-teal-900/30 animate-fade-in-up">
-        <h3 className="font-semibold text-lg text-teal-800 dark:text-teal-200">拼接设置</h3>
+        <h3 className="font-semibold text-lg text-teal-800 dark:text-teal-200">{t('mergeSettings')}</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">拼接方式</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{t('mergeDirection')}</label>
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setDirection('vertical')}
@@ -170,7 +168,7 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
                     : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
                 }`}
               >
-                上下拼接
+                {t('vertical')}
               </button>
               <button
                 onClick={() => setDirection('horizontal')}
@@ -180,7 +178,7 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
                     : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
                 }`}
               >
-                左右拼接
+                {t('horizontal')}
               </button>
               <button
                 onClick={() => setDirection('grid')}
@@ -190,14 +188,14 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
                     : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
                 }`}
               >
-                九宫格
+                {t('grid')}
               </button>
             </div>
           </div>
 
           {direction === 'grid' && (
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">网格列数</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{t('gridCols')}</label>
               <div className="flex gap-2 flex-wrap">
                 {[2, 3, 4].map((cols) => (
                   <button
@@ -209,7 +207,7 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
                         : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
                     }`}
                   >
-                    {cols} 列
+                    {t('cols', { n: cols })}
                   </button>
                 ))}
               </div>
@@ -218,7 +216,7 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
 
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              间距: {gap}px
+              {t('spacing')}: {gap}px
             </label>
             <input
               type="range"
@@ -231,7 +229,7 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">背景颜色</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{t('backgroundColor')}</label>
             <input
               type="color"
               value={backgroundColor}
@@ -251,19 +249,19 @@ export default function PhotoMerger({ images, onMerged }: PhotoMergerProps) {
           {isProcessing ? (
             <>
               <RefreshCw className="animate-spin" size={20} />
-              处理中...
+              {t('processing')}
             </>
           ) : (
             <>
               <RefreshCw size={20} />
-              重新处理
+              {t('reprocess')}
             </>
           )}
         </button>
       </div>
 
       <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-lg shadow-teal-500/5 border border-teal-100 dark:border-teal-900/30 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-        <h3 className="font-semibold text-lg mb-4 text-teal-800 dark:text-teal-200">预览</h3>
+        <h3 className="font-semibold text-lg mb-4 text-teal-800 dark:text-teal-200">{t('preview')}</h3>
         <canvas
           ref={canvasRef}
           className="max-w-full h-auto mx-auto rounded-lg transition-opacity duration-300"

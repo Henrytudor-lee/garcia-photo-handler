@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import PhotoUploader from '@/components/PhotoUploader';
 import PhotoMerger from '@/components/PhotoMerger';
-import { Upload, Scissors, Download, CheckCircle } from 'lucide-react';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { Upload, Scissors, Download, CheckCircle, Globe } from 'lucide-react';
 
 interface UploadedImage {
   id: string;
@@ -13,6 +14,7 @@ interface UploadedImage {
 }
 
 export default function Home() {
+  const { language, setLanguage, t } = useLanguage();
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [mergedImage, setMergedImage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'upload' | 'merge'>('upload');
@@ -48,6 +50,10 @@ export default function Home() {
     setTimeout(() => setIsDownloading(false), 600);
   }, [mergedImage]);
 
+  const toggleLanguage = useCallback(() => {
+    setLanguage(language === 'zh' ? 'en' : 'zh');
+  }, [language, setLanguage]);
+
   // Get image source - use cropped blob if available, otherwise use original
   const getImageSrc = (image: UploadedImage) => {
     if (image.croppedBlob) {
@@ -59,8 +65,20 @@ export default function Home() {
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-6xl mx-auto bg-gradient-to-br from-teal-50/50 via-white to-cyan-50/30 dark:from-teal-950/30 dark:via-gray-900 dark:to-cyan-950/20">
       <header className="text-center mb-8 animate-fade-in-up">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-teal-600 to-cyan-500 bg-clip-text text-transparent">GarciaPhotoHandler</h1>
-        <p className="text-gray-600 dark:text-gray-400">在线图片处理工具 - 支持拼接、裁剪</p>
+        <div className="flex items-center justify-center gap-4 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-teal-600 to-cyan-500 bg-clip-text text-transparent">
+            G-PhotoLab
+          </h1>
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-600 dark:text-gray-300 text-sm transition-colors"
+            title={language === 'zh' ? 'Switch to English' : '切换到中文'}
+          >
+            <Globe size={16} />
+            {language === 'zh' ? 'EN' : '中文'}
+          </button>
+        </div>
+        <p className="text-gray-600 dark:text-gray-400">{t('description')}</p>
       </header>
 
       <div className="flex justify-center gap-4 mb-6 flex-wrap animate-fade-in-up" style={{ animationDelay: '100ms' }}>
@@ -73,7 +91,7 @@ export default function Home() {
           }`}
         >
           <Upload size={20} className={activeTab === 'upload' ? 'text-teal-100' : ''} />
-          上传图片
+          {t('uploadTab')}
         </button>
         <button
           onClick={() => setActiveTab('merge')}
@@ -85,7 +103,7 @@ export default function Home() {
           } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-800`}
         >
           <Scissors size={20} className={activeTab === 'merge' ? 'text-teal-100' : ''} />
-          图片拼接
+          {t('mergeTab')}
         </button>
         {mergedImage && (
           <button
@@ -96,12 +114,12 @@ export default function Home() {
             {isDownloading ? (
               <>
                 <CheckCircle size={20} className="animate-pulse" />
-                已下载
+                {t('downloaded')}
               </>
             ) : (
               <>
                 <Download size={20} />
-                下载结果
+                {t('downloadResult')}
               </>
             )}
           </button>
@@ -128,7 +146,7 @@ export default function Home() {
 
       {mergedImage && showResult && (
         <div className="mt-8 text-center animate-fade-in-up">
-          <h2 className="text-xl font-semibold mb-4 text-teal-800 dark:text-teal-200">处理结果</h2>
+          <h2 className="text-xl font-semibold mb-4 text-teal-800 dark:text-teal-200">{t('result')}</h2>
           <img
             src={mergedImage}
             alt="Merged result"

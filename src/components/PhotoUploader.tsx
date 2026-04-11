@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { X, Image, Crop as CropIcon, Upload } from 'lucide-react';
 import CropModal from './CropModal';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 interface UploadedImage {
   id: string;
@@ -19,6 +20,7 @@ interface PhotoUploaderProps {
 }
 
 export default function PhotoUploader({ images, onUpload, onRemove, onCrop }: PhotoUploaderProps) {
+  const { t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [croppingImage, setCroppingImage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -103,13 +105,13 @@ export default function PhotoUploader({ images, onUpload, onRemove, onCrop }: Ph
           )}
         </div>
         <p className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-200">
-          {isDragging ? '松开上传图片' : '点击或拖拽上传图片'}
+          {isDragging ? t('dragDropTitleActive') : t('dragDropTitle')}
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          支持 JPG、PNG、GIF、WebP 等格式
+          {t('supportedFormats')}
         </p>
         <p className="text-sm text-teal-600 dark:text-teal-400 mt-2 font-medium">
-          已上传 {images.length} 张图片
+          {t('imagesUploaded', { count: images.length })}
         </p>
         <input
           ref={fileInputRef}
@@ -141,7 +143,7 @@ export default function PhotoUploader({ images, onUpload, onRemove, onCrop }: Ph
                     setCroppingImage(image.id);
                   }}
                   className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/30 hover:scale-110"
-                  title="裁剪图片"
+                  title={t('cropImage')}
                 >
                   <CropIcon size={16} />
                 </button>
@@ -159,7 +161,7 @@ export default function PhotoUploader({ images, onUpload, onRemove, onCrop }: Ph
                 {image.file.name}
               </p>
               {image.croppedBlob && (
-                <span className="text-xs text-teal-600 dark:text-teal-400 font-medium">已裁剪</span>
+                <span className="text-xs text-teal-600 dark:text-teal-400 font-medium">{t('cropped')}</span>
               )}
             </div>
           ))}

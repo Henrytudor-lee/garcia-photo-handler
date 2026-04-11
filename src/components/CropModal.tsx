@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Cropper, { Area } from 'react-easy-crop';
 import { X, Check, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 interface CropModalProps {
   image: string;
@@ -16,17 +17,16 @@ interface Point {
 }
 
 export default function CropModal({ image, onCropComplete, onCancel }: CropModalProps) {
+  const { t } = useLanguage();
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [aspectRatio, setAspectRatio] = useState(0);
 
-  // DOM 引用
   const containerRef = useRef<HTMLDivElement>(null);
   const cropperRef = useRef<any>(null);
 
-  // 实时裁剪区域位置 - 使用 ref 来存储，避免重渲染问题
   const cropAreaRectRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
   const [cropAreaRect, setCropAreaRect] = useState<{ x: number; y: number; width: number; height: number }>({
     x: 0,
@@ -34,10 +34,8 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
     width: 0,
     height: 0,
   });
-  // 强制更新计数器
   const [, setTick] = useState(0);
 
-  // 拖拽状态
   const isResizing = useRef(false);
   const startPos = useRef<Point>({ x: 0, y: 0 });
   const startCropArea = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
@@ -45,10 +43,8 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
 
   const onCropCompleteHandler = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
-    // 这里只存储像素坐标，不用于 DOM 定位
   }, []);
 
-  // 使用 MutationObserver 追踪裁剪区域位置变化
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -68,17 +64,14 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
           height: rect.height,
         };
 
-        // 同时更新 ref 和 state，并触发重新渲染
         cropAreaRectRef.current = newRect;
         setCropAreaRect(newRect);
-        setTick(t => t + 1); // 触发重新渲染
+        setTick(t => t + 1);
       }
     };
 
-    // 初始检测
     setTimeout(updateCropAreaPosition, 100);
 
-    // 使用 MutationObserver 监听变化
     const observer = new MutationObserver(() => {
       updateCropAreaPosition();
     });
@@ -90,8 +83,7 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
       attributeFilter: ['style'],
     });
 
-    // 定期更新位置（因为拖拽时可能不会触发 MutationObserver）
-    const interval = setInterval(updateCropAreaPosition, 16); // 约60fps
+    const interval = setInterval(updateCropAreaPosition, 16);
 
     return () => {
       observer.disconnect();
@@ -99,7 +91,6 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
     };
   }, []);
 
-  // 处理手柄拖拽开始
   const handleResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -116,7 +107,6 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
     document.body.style.userSelect = 'none';
   }, []);
 
-  // 处理拖拽移动
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizing.current || !startCropArea.current || !containerRef.current || !containerRectRef.current) return;
@@ -124,19 +114,15 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
       const container = containerRef.current;
       const containerRect = containerRectRef.current;
 
-      // 计算鼠标相对于容器的偏移
       const deltaX = e.clientX - startPos.current.x;
       const deltaY = e.clientY - startPos.current.y;
 
-      // 计算新的尺寸
       let newWidth = startCropArea.current.width + deltaX;
       let newHeight = startCropArea.current.height + deltaY;
 
-      // 限制最小尺寸
       newWidth = Math.max(50, newWidth);
       newHeight = Math.max(50, newHeight);
 
-      // 限制最大尺寸（不能超过图片可视区域）
       const imgElement = container.querySelector('.reactEasyCrop_Container img') as HTMLImageElement;
       if (imgElement) {
         const imgRect = imgElement.getBoundingClientRect();
@@ -146,7 +132,6 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
         newHeight = Math.min(newHeight, Math.max(50, maxHeight));
       }
 
-      // 更新裁剪区域 DOM 元素的尺寸
       const cropArea = container.querySelector('.reactEasyCrop_Container .reactEasyCrop_CropArea') as HTMLElement;
       if (cropArea) {
         cropArea.style.width = `${newWidth}px`;
@@ -160,14 +145,12 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
 
-        // 触发 onCropComplete 更新 croppedAreaPixels
         if (containerRef.current) {
           const container = containerRef.current;
           const cropArea = container.querySelector('.reactEasyCrop_Container .reactEasyCrop_CropArea') as HTMLElement;
           if (cropArea) {
             const rect = cropArea.getBoundingClientRect();
 
-            // 转换为图片像素坐标
             const img = container.querySelector('.reactEasyCrop_Container img') as HTMLImageElement;
             if (img) {
               const imgRect = img.getBoundingClientRect();
@@ -268,7 +251,6 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
     setAspectRatio(ratio);
   };
 
-  // 手柄位置 - 使用 ref 获取最新位置
   const handlePosition = {
     left: cropAreaRectRef.current.x + cropAreaRectRef.current.width - 16,
     top: cropAreaRectRef.current.y + cropAreaRectRef.current.height - 16,
@@ -284,7 +266,7 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b dark:border-gray-700 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/30 dark:to-cyan-950/20">
-          <h3 className="text-lg font-semibold text-teal-800 dark:text-teal-200">裁剪图片</h3>
+          <h3 className="text-lg font-semibold text-teal-800 dark:text-teal-200">{t('cropTitle')}</h3>
           <button
             onClick={onCancel}
             className="p-2 hover:bg-teal-100 dark:hover:bg-teal-900/30 rounded-full transition-colors text-teal-700 dark:text-teal-300 btn-press"
@@ -312,7 +294,6 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
             }}
           />
 
-          {/* 右下角拖拽手柄 */}
           {aspectRatio === 0 && (
             <div
               className="absolute z-50"
@@ -354,9 +335,7 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
 
         <div className="p-4 space-y-4">
           <p className="text-sm text-teal-600 dark:text-teal-400 text-center">
-            {aspectRatio === 0
-              ? '拖拽右下角青色手柄调整裁剪框大小'
-              : '拖拽裁剪框选择要保留的区域'}
+            {aspectRatio === 0 ? t('dragHandleTip') : t('dragCropTip')}
           </p>
 
           <div className="flex items-center gap-4">
@@ -446,7 +425,7 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
                   : 'bg-gray-100 dark:bg-gray-700 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-gray-700 dark:text-gray-300'
               }`}
             >
-              自由比例
+              {t('freeRatio')}
             </button>
           </div>
 
@@ -455,14 +434,14 @@ export default function CropModal({ image, onCropComplete, onCancel }: CropModal
               onClick={onCancel}
               className="btn-press flex-1 px-4 py-3 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-colors"
             >
-              取消
+              {t('cancel')}
             </button>
             <button
               onClick={getCroppedImg}
               className="btn-press flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:shadow-lg hover:shadow-teal-500/25 hover:from-teal-600 hover:to-teal-700 font-medium transition-all duration-200"
             >
               <Check size={18} />
-              确认裁剪
+              {t('confirmCrop')}
             </button>
           </div>
         </div>
